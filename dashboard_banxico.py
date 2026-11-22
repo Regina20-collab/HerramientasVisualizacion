@@ -257,23 +257,17 @@ with abajo_izq:
     st.pyplot(fig)
 
 with abajo_der:
-    st.subheader("Promedio por mes y año")
-    calor = principal.pivot_table(index="Anio", columns="Mes",
-                                  values="Valor", aggfunc="mean")
+    st.subheader("Volatilidad en el tiempo")
+    principal["Volatilidad"] = principal["Variacion"].rolling(30).std()
 
     fig, ax = plt.subplots(figsize=(6, 3.4))
-    imagen = ax.imshow(calor, cmap="YlGnBu", aspect="auto")
-    fig.colorbar(imagen, ax=ax)
-    ax.set_xticks(range(len(calor.columns)))
-    ax.set_xticklabels(["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul",
-                        "Ago", "Sep", "Oct", "Nov", "Dic"][:len(calor.columns)])
-    ax.set_yticks(range(len(calor.index)))
-    ax.set_yticklabels(calor.index)
-    ax.grid(False)
+    ax.plot(principal["Fecha"], principal["Volatilidad"],
+            color=ROJO, linewidth=1.8)
+    ax.set_xlabel("Fecha")
+    ax.set_ylabel("Desv. estándar de la variación diaria (%)")
     st.pyplot(fig)
-    st.caption("Escala secuencial: el valor tiene orden pero no un cero "
-               "con significado, así que no va divergente.")
-
+    st.caption("Desviación estándar de los últimos 30 días. "
+               "Los picos indican periodos de mayor inestabilidad.")
 
 # ─── Datos ─────────────────────────────────────────────────────────────
 with st.expander("Ver y descargar los datos"):
